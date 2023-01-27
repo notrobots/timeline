@@ -102,7 +102,7 @@ class TimelineActivity : AppCompatActivity() {
             }
         })
         adapter.setOnImageClickListener { image, _ ->
-            TimelineImageFragment(image)
+            TimelineImageDialog(image)
                 .show(supportFragmentManager, null)
         }
     }

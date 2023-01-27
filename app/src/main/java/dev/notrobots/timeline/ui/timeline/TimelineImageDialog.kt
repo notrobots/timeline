@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import dev.notrobots.timeline.R
@@ -11,9 +12,9 @@ import dev.notrobots.timeline.databinding.FragmentTimelineImageBinding
 import dev.notrobots.timeline.models.CachedImage
 import dev.notrobots.timeline.util.savedStateName
 
-class TimelineImageFragment(
+class TimelineImageDialog(
     private var image: CachedImage? = null
-) : DialogFragment(R.layout.fragment_timeline_image) {
+) : DialogFragment() {
     lateinit var binding: FragmentTimelineImageBinding
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -22,20 +23,28 @@ class TimelineImageFragment(
         outState.putSerializable(SAVED_STATE_IMAGE, image)
     }
 
+//    override fun getTheme(): Int {
+//        return R.style.Timeline_Dialog_ImageDialog
+//    }
+
     override fun onStart() {
         super.onStart()
 
-        dialog?.let {
-            it.window?.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
+//        dialog?.let {
+//            it.window?.setLayout(
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.MATCH_PARENT
+//            )
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
+//        dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
 
+        setStyle(STYLE_NO_TITLE, R.style.Timeline_Dialog_ImageDialog)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -69,6 +78,6 @@ class TimelineImageFragment(
     }
 
     companion object {
-        private val SAVED_STATE_IMAGE = savedStateName<TimelineImageFragment>("image")
+        private val SAVED_STATE_IMAGE = savedStateName<TimelineImageDialog>("image")
     }
 }
