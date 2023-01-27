@@ -1,21 +1,19 @@
-package dev.notrobots.timeline.ui.timeline
+package dev.notrobots.timeline.ui.timelineimage
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import dev.notrobots.timeline.R
-import dev.notrobots.timeline.databinding.FragmentTimelineImageBinding
+import dev.notrobots.timeline.databinding.DialogTimelineImageBinding
 import dev.notrobots.timeline.models.CachedImage
-import dev.notrobots.timeline.util.savedStateName
 
 class TimelineImageDialog(
     private var image: CachedImage? = null
 ) : DialogFragment() {
-    lateinit var binding: FragmentTimelineImageBinding
+    private lateinit var binding: DialogTimelineImageBinding
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -23,32 +21,26 @@ class TimelineImageDialog(
         outState.putSerializable(SAVED_STATE_IMAGE, image)
     }
 
-//    override fun getTheme(): Int {
-//        return R.style.Timeline_Dialog_ImageDialog
-//    }
-
     override fun onStart() {
         super.onStart()
 
-//        dialog?.let {
-//            it.window?.setLayout(
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.MATCH_PARENT
-//            )
-//        }
+        dialog?.let {
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+
+            it.window?.setLayout(width, height)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dialog?.setCancelable(false)
-        dialog?.setCanceledOnTouchOutside(false)
-//        dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
 
-        setStyle(STYLE_NO_TITLE, R.style.Timeline_Dialog_ImageDialog)
+        setStyle(STYLE_NORMAL, R.style.Timeline_Dialog_ImageDialog)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentTimelineImageBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DialogTimelineImageBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -56,7 +48,11 @@ class TimelineImageDialog(
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.let {
-            image = it.getSerializable(SAVED_STATE_IMAGE) as CachedImage
+            image = savedInstanceState.getSerializable(SAVED_STATE_IMAGE) as CachedImage
+        }
+
+        requireNotNull(image) {
+            "Image is null"
         }
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -78,6 +74,6 @@ class TimelineImageDialog(
     }
 
     companion object {
-        private val SAVED_STATE_IMAGE = savedStateName<TimelineImageDialog>("image")
+        private val SAVED_STATE_IMAGE = "${TimelineImageDialog::class.simpleName}.image"
     }
 }

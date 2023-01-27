@@ -19,6 +19,7 @@ import dev.notrobots.timeline.databinding.ActivityTimelineBinding
 import dev.notrobots.timeline.models.*
 import dev.notrobots.timeline.models.social.PostWithMedia
 import dev.notrobots.timeline.ui.settings.SettingsActivity
+import dev.notrobots.timeline.ui.timelineimage.TimelineImageDialog
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
