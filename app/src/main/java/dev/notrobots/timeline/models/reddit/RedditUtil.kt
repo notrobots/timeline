@@ -8,7 +8,7 @@ import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.net.URL
 
-object RedditPostConverter {
+object RedditUtil {
     private val logger = Logger(this)
     val REDDIT_GALLERY_URL = "^https?://(www|new|old).reddit.com/gallery/\\w+\$".toRegex(RegexOption.IGNORE_CASE)
 
@@ -24,25 +24,53 @@ object RedditPostConverter {
         )
     }
 
+    fun getVideoEmbeds(submission: Submission): List<String> {
+        if (submission.isSelfPost) {
+            return emptyList()
+        }
+
+        submission.embeddedMedia?.let {
+            it.oEmbed?.let {
+                if (it.type == "video") {
+                    it.embedHtml?.let {
+                        return listOf(it)
+                    }
+                }
+            }
+        }
+
+        return emptyList()
+    }
+
+    fun getVideoUrls(submission: Submission): List<String> {
+        if (submission.isSelfPost) {
+            return emptyList()
+        }
+
+        submission.embeddedMedia?.let {
+            it.redditVideo?.let {
+                return listOf(it.fallbackUrl)
+            }
+        }
+
+        return emptyList()
+    }
+
+    //FIXME: If a post is a crosspost the images and videos won't show up in the crosspost
+    // to fix this you need to check if the submission is a crosspost and then use this method
+    // on the original post
     suspend fun getImageUrls(submission: Submission): List<String> {
         if (submission.isSelfPost) {
             return emptyList()
         }
 
-//        submission.embeddedMedia?.let {
-//            it.redditVideo?.let {
-//                // it.fallbackUrl   videos can't be saved to the database yet
-//                logger.logw("Videos not supported")
-//                return emptyList()
-//            }
-//
-//            it.oEmbed?.let {
-//                when (it.type) {
-//                    "photo" -> return listOf(it.url!!)
-//                     "video" ->  logger.logw("Videos not supported") //images.html can't be saved to the database yet
-//                }
-//            }
-//        }
+        submission.embeddedMedia?.let {
+            it.oEmbed?.let {
+                if (it.type == "photo") {
+                    return listOf(it.url!!)
+                }
+            }
+        }
 
         if (submission.url.endsWith(".jpg") ||
             submission.url.endsWith(".png") ||

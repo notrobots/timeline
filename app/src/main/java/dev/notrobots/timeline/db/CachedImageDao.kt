@@ -8,7 +8,7 @@ import dev.notrobots.timeline.models.CachedImage
 
 @Dao
 interface CachedImageDao {
-    @Query("SELECT * FROM CachedImage WHERE postId = :postId")
+    @Query("SELECT * FROM CachedImage WHERE image_postId = :postId")
     fun getCachedImages(postId: Long): List<CachedImage>
 
     @Insert(onConflict = IGNORE)

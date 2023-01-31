@@ -39,6 +39,7 @@
         </activity>
 
         <!-- Reddit (JRAW) -->
+        <!-- XXX: The client id might need to be an environment variable -->
         <meta-data
             android:name="net.dean.jraw.android.REDDIT_USERNAME"
             android:value="notrobots-dev" />

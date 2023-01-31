@@ -2,6 +2,7 @@ package dev.notrobots.timeline.modules
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import dev.notrobots.timeline.db.CachedImageDao
 import dev.notrobots.timeline.db.ProfileDao
 import dev.notrobots.timeline.db.TimelineDatabase
+import dev.notrobots.timeline.db.VideoDao
 import dev.notrobots.timeline.models.*
 import dev.notrobots.timeline.models.reddit.RedditPostDao
 import javax.inject.Singleton
@@ -33,13 +35,17 @@ object DatabaseModule {
     }
 
     @Provides
+    fun videoDao(database: TimelineDatabase): VideoDao {
+        return database.videoDao()
+    }
+
+    @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TimelineDatabase {
         return Room.databaseBuilder(
             context,
             TimelineDatabase::class.java,
             "Timeline"
-        ).fallbackToDestructiveMigration()
-            .build()
+        ).build()
     }
 }

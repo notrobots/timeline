@@ -7,8 +7,10 @@ import androidx.core.view.isGone
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import dev.notrobots.androidstuff.extensions.makeToast
 import dev.notrobots.androidstuff.widget.BindableViewHolder
+import dev.notrobots.timeline.R
 import dev.notrobots.timeline.databinding.ItemTimelineRedditBinding
 import dev.notrobots.timeline.models.*
 import dev.notrobots.timeline.models.social.PostWithMedia
@@ -177,6 +179,22 @@ class TimelineAdapter(
                 binding.images.adapter = adapter
             } else {
                 binding.images.isGone = true
+            }
+
+            if (item.videos.isNotEmpty()) {
+                val video = item.videos.first() // TODO Multiple video support?
+
+                binding.video.setOnClickListener {
+                    context.makeToast("Video player not implemented yet")
+                }
+                binding.video.isGone = false
+
+                Glide.with(context)
+                    .load(video.preview)
+                    .placeholder(R.drawable.placeholder_512x512)
+                    .into(binding.videoPreview)
+            } else {
+                binding.video.isGone = true
             }
         }
     }

@@ -30,7 +30,11 @@ interface RedditPostDao : BaseDao<RedditPost> {
                     
                     -- Post images
                     LEFT JOIN CachedImage
-                    ON RedditPost.postId = CachedImage.postId
+                    ON RedditPost.postId = CachedImage.image_postId
+                    
+                    -- Post videos
+                    LEFT JOIN Video
+                    ON RedditPost.postId = Video.video_postId
                     
                     -- Profile info
                     INNER JOIN Profile

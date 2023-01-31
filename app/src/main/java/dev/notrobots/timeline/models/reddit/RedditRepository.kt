@@ -4,7 +4,9 @@ import dev.notrobots.timeline.models.CachedImage
 import dev.notrobots.timeline.db.CachedImageDao
 import dev.notrobots.timeline.models.Profile
 import dev.notrobots.timeline.db.ProfileDao
+import dev.notrobots.timeline.db.VideoDao
 import dev.notrobots.timeline.models.Socials
+import dev.notrobots.timeline.models.Video
 import dev.notrobots.timeline.models.social.SocialRepository
 import dev.notrobots.timeline.util.SocialManager
 import net.dean.jraw.models.Submission
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class RedditRepository @Inject constructor(
     val redditPostDao: RedditPostDao,
     val profileDao: ProfileDao,
-    val cachedImageDao: CachedImageDao
+    val cachedImageDao: CachedImageDao,
+    val videoDao: VideoDao
 ) : SocialRepository<List<RedditPostWithMedia>>() {
     override val posts = redditPostDao.getPostsWithMediaLive()
     override val profiles = profileDao.getProfilesLive(Socials.Reddit)
@@ -52,9 +55,9 @@ class RedditRepository @Inject constructor(
             }
 
 //            if (paginator == null) {
-                paginator = redditClient.frontPage()
-                    .sorting(SubredditSort.NEW)
-                    .build()
+            paginator = redditClient.frontPage()
+                .sorting(SubredditSort.NEW)
+                .build()
 //            }
 
             // Browsing by "new" isn't the default on reddit, unlike on twitter.
@@ -68,12 +71,15 @@ class RedditRepository @Inject constructor(
 //                RedditPostConverter.redditPost(it, profile)
 //            }
 
-            logger.logi("Refreshing posts from profile $profile")
+            logger.logi("Refreshing posts from profile $profile, found ${listing.children.size} posts")
 
             for (submission in listing.children) {  //FIXME: These needs to be added all together because of how the livedata observer works
-                val post = RedditPostConverter.redditPost(submission, profile)
+                val post = RedditUtil.redditPost(submission, profile)
                 val storedPost = redditPostDao.findPostWithRemoteId(post.remotePostId)
-                val images = RedditPostConverter.getImageUrls(submission)
+                val images = RedditUtil.getImageUrls(submission)
+                val videos = RedditUtil.getVideoUrls(submission)
+                val videoEmbeds = RedditUtil.getVideoEmbeds(submission)
+                val videoPreview = submission.preview?.images?.firstOrNull()?.source?.url
                 var postId = storedPost?.postId ?: 0
 
                 if (storedPost == null) {
@@ -82,16 +88,37 @@ class RedditRepository @Inject constructor(
                     redditPostDao.update(post)
                 }
 
-                images.forEach {
-                    val cachedImage = CachedImage(it, postId)
+                for (image in images) {
+                    cachedImageDao.insert(
+                        CachedImage(
+                            image,
+                            postId
+                        )
+                    )
+                }
 
-                    cachedImageDao.insert(cachedImage)
+                for (video in videos) {
+                    videoDao.insertOrIgnore(
+                        Video(
+                            postId,
+                            video,
+                            "",
+                            videoPreview
+                        )
+                    )
+                }
+
+                for (video in videoEmbeds) {
+                    videoDao.insertOrIgnore(
+                        Video(
+                            postId,
+                            "",
+                            video,
+                            videoPreview
+                        )
+                    )
                 }
             }
-
-//            logger.logi("Found ${posts.size} posts")
-
-//            redditPostDao.insertOrUpdate(posts)
 
             // If you decide to use one single AccountHelper then you should probably logout after each
             // profile uses the helper

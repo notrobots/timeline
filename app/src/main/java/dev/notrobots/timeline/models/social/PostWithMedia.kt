@@ -10,7 +10,7 @@ abstract class PostWithMedia<P : Post>(
     val post: P,
     @Relation(
         parentColumn = "postId",
-        entityColumn = "postId"
+        entityColumn = "image_postId"
     )
     val images: List<CachedImage>,
     @Relation(
