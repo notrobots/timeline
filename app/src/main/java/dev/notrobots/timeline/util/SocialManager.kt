@@ -92,6 +92,14 @@ object SocialManager {
             }
         }
     }
+
+    fun twitterAddNewProfile(profile: Profile) {
+
+    }
+
+    fun tumblrAddNewProfile(profile: Profile) {
+
+    }
 }
 
 private fun List<Profile>.filterRedditProfiles() = filter { it.social == Socials.Reddit }

@@ -16,6 +16,8 @@ import dev.notrobots.timeline.R
 import dev.notrobots.timeline.db.ProfileDao
 import dev.notrobots.timeline.dialogs.LogoutProfileDialog
 import dev.notrobots.timeline.ui.reddit.RedditLoginActivity
+import dev.notrobots.timeline.ui.tumblr.TumblrLoginActivity
+import dev.notrobots.timeline.ui.twitter.TwitterLoginActivity
 import dev.notrobots.timeline.util.SocialManager
 import javax.inject.Inject
 
@@ -39,6 +41,22 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> requireContext().makeToast("Error!")
 
+            }
+        }
+        private val twitterLoginRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                TwitterLoginActivity.RESULT_OK -> requireContext().makeToast("Logged in!")
+                TwitterLoginActivity.RESULT_ALREADY_LOGGED_IN -> requireContext().makeToast("Logged in!")
+
+                else -> requireContext().makeToast("Error! ${it.resultCode}")
+            }
+        }
+        private val tumblrLoginRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                TumblrLoginActivity.RESULT_OK -> requireContext().makeToast("Logged in!")
+                TumblrLoginActivity.RESULT_ALREADY_LOGGED_IN -> requireContext().makeToast("Logged in!")
+
+                else -> requireContext().makeToast("Error! ${it.resultCode}")
             }
         }
         private val profilesCategoryPref by lazy {
@@ -83,19 +101,21 @@ class SettingsActivity : AppCompatActivity() {
 //                        requireContext().makeToast("Already logged in. Authenticating..")
 //                    }
 //                } else {
-                    redditLoginRequest.launch(Intent(requireContext(), RedditLoginActivity::class.java))
+                redditLoginRequest.launch(Intent(requireContext(), RedditLoginActivity::class.java))
 //                }
 
                 true
             }
 
             findPreference<Preference>("_twitter_login")?.setOnPreferenceClickListener {
-                requireContext().makeToast("Twitter login not supported yet")
+//                requireContext().makeToast("Twitter login not supported yet")
+                twitterLoginRequest.launch(Intent(requireContext(), TwitterLoginActivity::class.java))
                 true
             }
 
             findPreference<Preference>("_tumblr_login")?.setOnPreferenceClickListener {
-                requireContext().makeToast("Tumblr login not supported yet")
+//                requireContext().makeToast("Tumblr login not supported yet")
+                tumblrLoginRequest.launch(Intent(requireContext(), TumblrLoginActivity::class.java))
                 true
             }
         }

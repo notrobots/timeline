@@ -15,3 +15,10 @@ const val TWITTER_DEV_USERNAME = "NotRobotsDev"
 val TWITTER_USER_AGENT = "android:${App.PACKAGE_NAME}:${App.VERSION} (by @$TWITTER_DEV_USERNAME)"
 
 //endregion
+
+//region Tumblr
+
+const val TUMBLR_DEV_USERNAME = "notrobotsdev"
+val TUMBLR_USER_AGENT = "android:${App.PACKAGE_NAME} (by $TUMBLR_DEV_USERNAME.tumblr.com)"
+
+//endregion

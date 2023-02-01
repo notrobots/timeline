@@ -14,6 +14,8 @@ import dev.notrobots.timeline.db.TimelineDatabase
 import dev.notrobots.timeline.db.VideoDao
 import dev.notrobots.timeline.models.*
 import dev.notrobots.timeline.models.reddit.RedditPostDao
+import dev.notrobots.timeline.models.tumblr.TumblrPostDao
+import dev.notrobots.timeline.models.twitter.TwitterPostDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -32,6 +34,16 @@ object DatabaseModule {
     @Provides
     fun redditPostDao(database: TimelineDatabase): RedditPostDao {
         return database.redditPostDao()
+    }
+
+    @Provides
+    fun twitterPostDao(database: TimelineDatabase): TwitterPostDao {
+        return database.twitterPostDao()
+    }
+
+    @Provides
+    fun tumblrPostDao(database: TimelineDatabase): TumblrPostDao {
+        return database.tumblrPostDao()
     }
 
     @Provides

@@ -38,6 +38,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="dev.notrobots.timeline.ui.twitter.TwitterLoginActivity" />
+
+        <activity android:name="dev.notrobots.timeline.ui.tumblr.TumblrLoginActivity" />
+
         <!-- Reddit (JRAW) -->
         <!-- XXX: The client id might need to be an environment variable -->
         <meta-data

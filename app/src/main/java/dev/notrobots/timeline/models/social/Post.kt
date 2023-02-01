@@ -9,7 +9,7 @@ abstract class Post(
     /**
      * Id of the profile this post belongs to.
      */
-    var profileId: Long = 0,
+    var profileId: Long,
 
     /**
      * String identifier of the social.
