@@ -2,7 +2,10 @@ package dev.notrobots.timeline.util
 
 import android.content.Context
 import android.util.Log
+import dev.notrobots.androidstuff.networking.OAuth2Helper
 import dev.notrobots.androidstuff.util.Logger
+import dev.notrobots.timeline.data.TUMBLR_CONSUMER_KEY
+import dev.notrobots.timeline.data.TUMBLR_USER_AGENT
 import dev.notrobots.timeline.models.Profile
 import dev.notrobots.timeline.models.Socials
 import net.dean.jraw.android.AndroidHelper
@@ -25,6 +28,15 @@ object SocialManager {
         private set
     lateinit var deviceUuid: UUID
         private set
+    val tumblrOAuth2Helper by lazy {
+        OAuth2Helper(
+            TUMBLR_CONSUMER_KEY,
+            TUMBLR_USER_AGENT,
+            deviceUuid.toString(),
+            "www.tumblr.com/oauth2/authorize",
+            listOf("basic")
+        )
+    }
 
     fun init(context: Context, profiles: List<Profile>) {
         deviceUuid = UUID.randomUUID()
