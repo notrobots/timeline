@@ -105,7 +105,9 @@ dependencies {
      */
     implementation 'net.dean.jraw:JRAW-Android:1.1.0'
     implementation 'io.github.redouane59.twitter:twittered:2.19'
-    implementation 'com.tumblr:jumblr:0.0.13'
+//    implementation 'com.tumblr:jumblr:0.0.13'
+    implementation project(':timeline-tumblr:library')
+    implementation project(':timeline-oauth:library')
 
     /**
      * Others
@@ -115,4 +117,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+//    implementation 'com.github.scribejava:scribejava-core:8.3.3'
+//    implementation 'com.github.scribejava:scribejava-apis:8.3.3'
 }

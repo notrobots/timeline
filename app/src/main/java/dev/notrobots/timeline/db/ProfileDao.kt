@@ -20,6 +20,9 @@ interface ProfileDao : BaseDao<Profile> {
     @Query("SELECT * FROM Profile WHERE social = :social")
     fun getProfilesLive(social: String): LiveData<List<Profile>>
 
+    @Query("SELECT * FROM Profile WHERE username = :username AND social = :social")
+    fun getProfile(username: String, social: String): Profile?
+
     @Query("SELECT EXISTS(SELECT * FROM Profile WHERE username = :username AND social = :social)")
     suspend fun exists(username: String, social: String): Boolean
 

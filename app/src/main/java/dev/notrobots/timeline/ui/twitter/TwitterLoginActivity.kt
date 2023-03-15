@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.notrobots.androidstuff.extensions.viewBindings
 import dev.notrobots.androidstuff.util.Logger
+import dev.notrobots.timeline.data.DEVICE_UUID_STRING
 import dev.notrobots.timeline.data.TWITTER_USER_AGENT
 import dev.notrobots.timeline.databinding.ActivityTwitterLoginBinding
 import dev.notrobots.timeline.db.ProfileDao
@@ -27,6 +28,7 @@ import net.dean.jraw.http.HttpRequest
 import net.dean.jraw.http.OkHttpNetworkAdapter
 import net.dean.jraw.http.UserAgent
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import javax.inject.Inject
@@ -64,7 +66,7 @@ class TwitterLoginActivity : AppCompatActivity() {
                     "redirect_uri" to "http://localhost:8080",
                     "scope" to "tweet.read%20users.read%20follows.read%20follows.write",
                     "state" to "state", //xxx ???
-                    "code_challenge" to SocialManager.deviceUuid.toString(),
+                    "code_challenge" to DEVICE_UUID_STRING,
                     "code_challenge_method" to "plain"
                 )
             )
@@ -80,7 +82,7 @@ class TwitterLoginActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
 
-                val url = HttpUrl.parse(url)
+                val url = url.toHttpUrlOrNull()
 
                 // Skip until the url is the same as the redirect uri
                 if (url == null || !url.toString().startsWith("http://localhost:8080")) {
@@ -129,7 +131,7 @@ class TwitterLoginActivity : AppCompatActivity() {
                                     "code" to code,
                                     "grant_type" to "authorization_code",
                                     "redirect_uri" to "http://localhost:8080",
-                                    "code_verifier" to SocialManager.deviceUuid.toString(),
+                                    "code_verifier" to DEVICE_UUID_STRING,
                                     "client_id " to "TWITTER_CLIENT_ID"
 
                                 )

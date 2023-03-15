@@ -30,4 +30,8 @@ data class Profile(
             profileId
         )
     }
+
+    override fun toString(): String {
+        return username + "_" + social
+    }
 }
