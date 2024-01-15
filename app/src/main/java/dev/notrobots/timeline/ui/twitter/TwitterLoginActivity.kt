@@ -158,14 +158,16 @@ class TwitterLoginActivity : AppCompatActivity() {
                         } else {
                             val newProfile = Profile(
                                 username,
-                                Socials.Twitter
+                                Socials.Twitter,
+                                true,
+                                "@"
                             )
 
                             profileDao.insert(newProfile).also {
                                 newProfile.profileId = it
                             }
 
-                            SocialManager.twitterAddNewProfile(newProfile)
+//                            SocialManager.twitterAddNewProfile(newProfile)
                             setResult(RESULT_OK)
                         }
                     } catch (_: Exception) {

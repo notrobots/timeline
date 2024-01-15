@@ -1,12 +1,10 @@
 package dev.notrobots.timeline.ui.splash
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.notrobots.androidstuff.extensions.startActivity
-import dev.notrobots.androidstuff.extensions.toStringOrEmpty
 import dev.notrobots.androidstuff.util.Logger
 import dev.notrobots.timeline.data.TUMBLR_USER_AGENT
 import dev.notrobots.timeline.db.ProfileDao
@@ -39,11 +37,11 @@ class SplashActivity : AppCompatActivity() {
 
 
             // TEST
-            SocialManager.genericTokenStore.ids.filter {
+            SocialManager.defaultTokenStore.ids.filter {
                 it.endsWith(Socials.Tumblr)
             }.forEach {
                 try {
-                    val accessToken = SocialManager.genericTokenStore.fetch(it)
+                    val accessToken = SocialManager.defaultTokenStore.fetch(it)
                     val userRequest = Request.Builder()
                         .url("https://api.tumblr.com/v2/user/info")
                         .header("Authorization", "Bearer ${accessToken?.accessToken}")

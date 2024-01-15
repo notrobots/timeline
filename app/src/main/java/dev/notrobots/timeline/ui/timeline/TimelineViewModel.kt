@@ -10,6 +10,8 @@ import dev.notrobots.timeline.models.social.PostWithMedia
 import dev.notrobots.timeline.models.reddit.RedditPostDao
 import dev.notrobots.timeline.models.reddit.RedditRepository
 import dev.notrobots.timeline.models.social.SocialRepository
+import dev.notrobots.timeline.models.tumblr.TumblrPostDao
+import dev.notrobots.timeline.models.tumblr.TumblrRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,11 +20,14 @@ import javax.inject.Inject
 class TimelineViewModel @Inject constructor(
     val redditRepository: RedditRepository,
     val redditPostDao: RedditPostDao,
+    val tumblrRepository: TumblrRepository,
+    val tumblrPostDao: TumblrPostDao,
     val cachedImageDao: CachedImageDao,
     val profileDao: ProfileDao
 ) : ViewModel() {
     private val socialRepositories: List<SocialRepository<*>> = listOf(
-        redditRepository
+        redditRepository,
+        tumblrRepository
     )
     private val socialRepositoriesProfilesObservers = socialRepositories.associateWith { repository ->
         Observer<List<Profile>> {

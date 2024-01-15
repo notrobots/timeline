@@ -6,12 +6,14 @@ import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.tumblr.jumblr.request.TumblrAuthHelper
 import dagger.hilt.android.AndroidEntryPoint
-import dev.notrobots.androidstuff.extensions.toStringOrEmpty
 import dev.notrobots.androidstuff.extensions.viewBindings
 import dev.notrobots.androidstuff.util.Logger
+import dev.notrobots.timeline.data.TUMBLR_CONSUMER_KEY
+import dev.notrobots.timeline.data.TUMBLR_CONSUMER_SECRET
+import dev.notrobots.timeline.data.TUMBLR_REDIRECT_URI
 import dev.notrobots.timeline.data.TUMBLR_USER_AGENT
 import dev.notrobots.timeline.databinding.ActivityTwitterLoginBinding
 import dev.notrobots.timeline.db.ProfileDao
@@ -20,10 +22,8 @@ import dev.notrobots.timeline.models.Socials
 import dev.notrobots.timeline.util.SocialManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.dean.jraw.android.SharedPreferencesTokenStore
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,7 +42,8 @@ class TumblrLoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val tumblrHelper = SocialManager.tumblrHelper()
+        val helper = SocialManager.tumblrHelper()
+        val state = UUID.randomUUID().toString()
 
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()
@@ -54,57 +55,28 @@ class TumblrLoginActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
 
-                if (tumblrHelper.isFinalRequestUrl(url)) {
-                    D
-
+                if (helper.isFinalRequestUrl(url)) {
                     lifecycleScope.launch(Dispatchers.Default) {
                         try {
-                            val code = tumblrHelper.getCode(url)
-                            val accessToken = tumblrHelper.requestAccessToken(code)
-
-                            requireNotNull(accessToken) {
-                                "Access token is null"
-                            }
-
-                            val userRequest = Request.Builder()
-                                .url("https://api.tumblr.com/v2/user/info")
-                                .header("Authorization", "Bearer ${accessToken.accessToken}")
-                                .header("User-Agent", TUMBLR_USER_AGENT)
-                                .build()
-                            val userResponse = http.newCall(userRequest).execute()
-
-//                        val tumblrClient = JumblrClient(
-//                            TUMBLR_CONSUMER_KEY,
-//                            TUMBLR_CONSUMER_SECRET
-//                        )
-
-//                        tumblrClient.requestBuilder.
-
-                            val username = JSONObject(userResponse.body?.string() ?: "")
-                                .getJSONObject("response")
-                                .getJSONObject("user")
-                                .getString("name")
-
-                            // If the user is already present update the token
-
-                            val profile = profileDao.getProfile(username, Socials.Tumblr)
+                            helper.onUserChallenge(url, state)
+                            val username = helper.client.user().name
 
                             logger.logi("Logged user: $username")
 
-                            if (profile != null) {
+                            if (profileDao.exists(username, Socials.Tumblr)) {
                                 //xxx: Refresh token if needed?
-                                tumblrHelper.tokenStore.store(profile.toString(), accessToken)
+//                                tumblr.tokenStore.store(profile.toString(), accessToken)
                                 setResult(RESULT_ALREADY_LOGGED_IN)
                             } else {
-                                val newProfile = Profile(
+                                val profile = Profile(
                                     username,
-                                    Socials.Tumblr
+                                    Socials.Tumblr,
+                                    true,
+                                    helper.client.clientId
                                 )
 
-                                profileDao.insert(newProfile).also {
-                                    newProfile.profileId = it
-                                }
-                                tumblrHelper.tokenStore.store(newProfile.toString(), accessToken)
+                                profile.profileId = profileDao.insert(profile)
+                                SocialManager.tumblrAddProfile(profile, helper)
                                 setResult(RESULT_OK)
                             }
                         } catch (e: Exception) {
@@ -115,17 +87,9 @@ class TumblrLoginActivity : AppCompatActivity() {
                         }
                     }
                 }
-
-                lifecycleScope.launch(Dispatchers.Default) {
-
-                }
             }
         }
-        binding.webView.loadUrl(tumblrHelper.authorizationUrl)
-    }
-
-    fun WebView.injectJs(code: String) {
-        loadUrl("javascript:(function(){$code})()")
+        binding.webView.loadUrl(helper.authService.getAuthorizationUrl(state))
     }
 
     companion object {

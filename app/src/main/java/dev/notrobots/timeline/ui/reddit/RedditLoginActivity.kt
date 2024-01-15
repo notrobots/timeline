@@ -60,15 +60,13 @@ class RedditLoginActivity : AppCompatActivity() {
                             } else {
                                 val newProfile = Profile(
                                     username,
-                                    Socials.Reddit
+                                    Socials.Reddit,
+                                    true,
+                                    "@"
                                 )
 
-                                profileDao.insert(newProfile).also {
-                                    newProfile.profileId = it
-                                }
-
+                                newProfile.profileId = profileDao.insert(newProfile)
                                 SocialManager.redditAddNewProfile(newProfile, accountHelper)
-
                                 setResult(RESULT_OK)
                             }
                         } catch (_: Exception) {
