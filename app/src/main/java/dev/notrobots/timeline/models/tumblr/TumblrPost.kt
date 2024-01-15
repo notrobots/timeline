@@ -6,6 +6,7 @@ import dev.notrobots.timeline.models.social.Post
 
 @Entity
 class TumblrPost(
+    blogName: String,
     timestamp: Long,
     profileId: Long
 ) : Post(timestamp, profileId, Socials.Tumblr)

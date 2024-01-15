@@ -9,7 +9,8 @@ import java.io.Serializable
 data class Profile(
     val username: String,
     val social: String,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val clientId: String
 ): Serializable {
     @PrimaryKey(autoGenerate = true)
     var profileId: Long = 0L
@@ -19,7 +20,8 @@ data class Profile(
                other.username == username &&
                other.social == social &&
                other.enabled == enabled &&
-               other.profileId == profileId
+               other.profileId == profileId &&
+               other.clientId == clientId
     }
 
     override fun hashCode(): Int {
@@ -27,7 +29,8 @@ data class Profile(
             username,
             social,
             enabled,
-            profileId
+            profileId,
+            clientId
         )
     }
 
