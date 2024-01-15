@@ -1,0 +1,6 @@
+[submodule "timeline-tumblr"]
+	path = timeline-tumblr
+	url = https://github.com/notrobots/timeline-tumblr
+[submodule "timeline-oauth"]
+	path = timeline-oauth
+	url = https://github.com/notrobots/timeline-oauth
